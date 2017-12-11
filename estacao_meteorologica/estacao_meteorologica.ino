@@ -110,13 +110,13 @@ void loop(){
 
     delay(1000);
 
-    if(digitalRead(pino_d) == 1){
+    /*if(digitalRead(pino_d) == 1){
       if(chuva_anterior != chuva_atual){
         Serial.print("Chuva atual: ");
         Serial.println(chuva_atual);
         client.publish((const char*)"estacao0/chuva",chuva_atual_str);
       }
-    }
+    }*/
 
     if(digitalRead(DHTPIN) == 1){
       if(temperatura_anterior != temperatura_atual){
