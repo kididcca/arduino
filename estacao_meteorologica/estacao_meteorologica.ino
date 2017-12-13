@@ -7,9 +7,9 @@
 
 #define led 8
 #define led2 9
-#define pino_d  2     //sensor de chuva
-#define pino_a  A5    //sensor de chuva
-#define DHTPIN 3     // Define o pino de dados para pino digital 2
+#define pino_d  50     //sensor de chuva
+#define pino_a  A15    //sensor de chuva
+#define DHTPIN 46     // Define o pino de dados para pino digital 2
 #define DHTTYPE DHT22   // Define que o sensor é o DHT 22 (AM2302)
 
 byte mac[] = {  0xDE, 0xED, 0xBA, 0xFE, 0xFE, 0xED };
@@ -21,13 +21,11 @@ Adafruit_BMP280 bmp;
 EthernetClient ethClient;
 PubSubClient client(ethClient);
 
-int temp_anterior = 0;
 int chuva_anterior = 0;
 int temperatura_anterior = 0;
 int umidade_anterior = 0;
 float pressao_anterior = 0;
 
-int temp_atual = 0;
 int chuva_atual = 0;
 int umidade_atual = 0;
 int temperatura_atual = 0;
@@ -107,32 +105,27 @@ void loop(){
     itoa(temperatura_atual, temperatura_atual_str,10);
     itoa(umidade_atual, umidade_atual_str,10);
     itoa(pressao_atual,pres_atual_str,10);
-
-    delay(1000);
-
-    /*if(digitalRead(pino_d) == 1){
-      if(chuva_anterior != chuva_atual){
-        Serial.print("Chuva atual: ");
-        Serial.println(chuva_atual);
-        client.publish((const char*)"estacao0/chuva",chuva_atual_str);
-      }
-    }*/
-
-    if(digitalRead(DHTPIN) == 1){
-      if(temperatura_anterior != temperatura_atual){
-        Serial.print("Temp  atual: ");
-        Serial.println(temperatura_atual);
-        client.publish((const char*)"estacao0/temperatura",temperatura_atual_str);
-      }
+ 
+    if((chuva_anterior >= chuva_atual+10 || chuva_anterior <= chuva_atual-10) && chuva_atual != 0){
+      Serial.print("Chuva atual: ");
+      Serial.println(chuva_atual);
+      client.publish((const char*)"estacao0/chuva",chuva_atual_str);
     }
-    if(digitalRead(DHTPIN) == 1){
-      if(umidade_anterior != umidade_atual){
-        Serial.print("Umidade atual: ");
-        Serial.println(umidade_atual);
-        client.publish((const char*)"estacao0/umidade",umidade_atual_str);
-      }
+    
+    
+    if(temperatura_anterior != temperatura_atual && temperatura_atual != 0){
+      Serial.print("Temperatura  atual: ");
+      Serial.println(temperatura_atual);
+      client.publish((const char*)"estacao0/temperatura",temperatura_atual_str);
     }
-
+    
+   
+    if(umidade_anterior != umidade_atual && umidade_atual != 0){
+      Serial.print("Umidade atual: ");
+      Serial.println(umidade_atual);
+      client.publish((const char*)"estacao0/umidade",umidade_atual_str);
+    }
+    
     /*if(pressao_anterior != pressao_atual){
       Serial.print("Pressão atual: ");
       Serial.println(pressao_atual);
@@ -144,7 +137,9 @@ void loop(){
   temperatura_anterior = temperatura_atual;
   umidade_anterior = umidade_atual;
   pressao_anterior = pressao_atual;
-
+  
+  delay(1000);
+  
   client.loop();
   Ethernet.maintain();
 }
