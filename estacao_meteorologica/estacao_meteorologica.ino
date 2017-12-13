@@ -106,7 +106,7 @@ void loop(){
     itoa(umidade_atual, umidade_atual_str,10);
     itoa(pressao_atual,pres_atual_str,10);
  
-    if((chuva_anterior >= chuva_atual+10 || chuva_anterior <= chuva_atual-10) && chuva_atual != 0){
+    if((chuva_anterior >= chuva_atual+30 || chuva_anterior <= chuva_atual-30) && chuva_atual != 0){
       Serial.print("Chuva atual: ");
       Serial.println(chuva_atual);
       client.publish((const char*)"estacao0/chuva",chuva_atual_str);
